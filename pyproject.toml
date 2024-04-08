@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "ollama-rag-de"
+version = "0.1.0"
+description = "A tool to digest PDF files for Large Language Models and serving them via a REST API, including their source references."
+authors = ["crs <mail@christian-spaniol.de>"]
+license = "Proprietary"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+llama-index-readers-smart-pdf-loader = "^0.1.3"
+click = "^8.1.7"
+llama-index-vector-stores-qdrant = "^0.1.6"
+llama-index-llms-openai = "^0.1.14"
+llama-index-embeddings-openai = "^0.1.7"
+llama-index-embeddings-huggingface = "^0.2.0"
+llama-index-llms-ollama = "^0.1.2"
+fastembed = "^0.2.6"
+transformers = "^4.39.3"
+optimum = {extras = ["onnxruntime"], version = "^1.18.0"}
+onnxruntime = "^1.17.1"
+fastapi = "^0.110.1"
+uvicorn = "^0.29.0"
+python-dotenv = "^1.0.1"
+llama-index-embeddings-ollama = "^0.1.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.1.1"
+black = "^24.3.0"
+licensecheck = "^2024.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+ppf = "ollama_rag_de.cli:entrypoint"
+ask = "ollama_rag_de.cli:answer_question"
+# cache_model = "ollama_rag_de.util.embed_model:cache_embed_model"
+chat_server = "ollama_rag_de.server:chat_server"
