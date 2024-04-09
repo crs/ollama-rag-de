@@ -1,24 +1,25 @@
-import click
-import functools
+# import click
+# import functools
 from os import path
-from pathlib import Path
+
+# from pathlib import Path
 from qdrant_client import QdrantClient
 from llama_index.core import ServiceContext
 from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.core import StorageContext, load_index_from_storage
+from llama_index.core import StorageContext
 
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.core import VectorStoreIndex
 from llama_index.core.schema import Document as LlamaDoc
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.core.embeddings.utils import resolve_embed_model
+
+# from llama_index.core.embeddings.utils import resolve_embed_model
 
 
 from llmsherpa.readers import Document as SherpaDoc
 from llmsherpa.readers import Block as SherpaBlock
 
-from .util.embed_model import get_tokenizer, get_model
+# from .util.embed_model import get_tokenizer, get_model
 
 from .settings import (
     LLM_MODEL,

@@ -1,10 +1,12 @@
 import os, logging
+
 # from .vector_store import get_vector_store_index as get_index
-from .vector_store import get_vector_store_index, get_llm
+from .vector_store import get_vector_store_index  # , get_llm
 
 from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core.prompts import ChatPromptTemplate
-from llama_index.core.memory import ChatMemoryBuffer
+
+# from llama_index.core.memory import ChatMemoryBuffer
 # Text QA Prompt
 logger = logging.getLogger("uvicorn")
 
@@ -55,22 +57,22 @@ refine_template = ChatPromptTemplate(chat_refine_msgs)
 
 
 def get_chat_engine():
-    #engine = get_index().as_chat_engine()
+    # engine = get_index().as_chat_engine()
     logger.debug(f"Running with {os.environ['COLLECTION']}")
     # engine = get_vector_store_index(collection=os.environ['COLLECTION']).as_chat_engine(
-    #      similarity_top_k=3, 
-    #      chat_mode="context", # "condense_plus_context", 
+    #      similarity_top_k=3,
+    #      chat_mode="context", # "condense_plus_context",
     #      llm=get_llm(),
     #      memory=ChatMemoryBuffer.from_defaults(token_limit=1500),
     #      text_qa_template=text_qa_template,
     #      refine_template=refine_template
     # )
-    
-    engine = get_vector_store_index(collection=os.environ['COLLECTION']).as_query_engine(
+
+    engine = get_vector_store_index(
+        collection=os.environ["COLLECTION"]
+    ).as_query_engine(
         streaming=True,
         similarity_top_k=3,
-
     )
-    
-    return engine
 
+    return engine
