@@ -7,7 +7,7 @@ services:
     volumes:
       - /Users/crs/Entwicklung/sandbox-n8n/n8n-postgres-worker/example_data/raw/Sharepoint:/data
     environment:
-      CORS_ORIGIN: http://localhost:3000
+      CORS_ORIGIN: 'http://localhost:3000,http://localhost:8080' # <- adjust to your frontend, one or more comma-separated URLs
       LLM_HOST: http://host.docker.internal:11434  # <- use this if you run Ollama natively
       LLMSHERPA_API_URL: http://llm-sherpa:5001/api/parseDocument?renderFormat=all&applyOcr=yes&useNewIndentParser=yes # <- LLM-Sherpa in docker
       QDRANT_CONNECTION_STRING: http://qdrant:6333  # <- Qdrant in docker

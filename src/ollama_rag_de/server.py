@@ -32,7 +32,7 @@ if environment == "prod" or environment == "production":
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[CORS_ORIGIN],
+        allow_origins=CORS_ORIGIN,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

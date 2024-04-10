@@ -16,6 +16,9 @@ def get_env_with_default(key, default):
         logger.info(f"{key}: {default} (default)")
     else:
         logger.info(f"{key}: {value} (environ)")
+
+    if key == "CORS_ORIGIN":
+        return value.split(",")
     return value
 
 
