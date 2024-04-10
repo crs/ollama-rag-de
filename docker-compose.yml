@@ -7,34 +7,29 @@ services:
     volumes:
       - /Users/crs/Entwicklung/sandbox-n8n/n8n-postgres-worker/example_data/raw/Sharepoint:/data
     environment:
-      # LLM_HOST: http://host.docker.internal:11434
-      # QDRANT_CONNECTION_STRING: http://host.docker.internal:6333
-      # LLMSHERPA_API_URL: http://host.docker.internal:5010/api/parseDocument?renderFormat=all
-      LLM_HOST: http://ollama:11434
-      QDRANT_CONNECTION_STRING: http://qdrant:6333
-      LLMSHERPA_API_URL: http://llm-sherpa:5001/api/parseDocument?renderFormat=all
       CORS_ORIGIN: http://localhost:3000
+      LLM_HOST: http://host.docker.internal:11434  # <- use this if you run Ollama natively
+      LLMSHERPA_API_URL: http://llm-sherpa:5001/api/parseDocument?renderFormat=all&applyOcr=yes&useNewIndentParser=yes # <- LLM-Sherpa in docker
+      QDRANT_CONNECTION_STRING: http://qdrant:6333  # <- Qdrant in docker
+      # LLM_HOST: http://ollama:11434                               # <- Ollama in docker (_not_ recommended on macOS)
+      # QDRANT_CONNECTION_STRING: http://host.docker.internal:6333  # <- Qdrant on host
+      # LLMSHERPA_API_URL: http://host.docker.internal:5010/api/parseDocument?renderFormat=all # <- use this if you run LLM-Sherpa on host     
   
   llm-sherpa:
     image: ghcr.io/nlmatics/nlm-ingestor:latest    
     restart: unless-stopped
   
-  # CPU only, see https://hub.docker.com/r/ollama/ollama for GPU support
-  # On macOS, it proved more reliable to use a dedicated ollama server outside of docker runtime (speak 600% CPU usage on a 6-core machine)
-  # just change the LLM_HOST to the external IP of the ollama server (e.g. http://localhost:11434)
-  ollama: 
-    image: ollama/ollama
-    restart: unless-stopped
-    # ports:
-    #  - "11434:11434"        
-    volumes:
-      - ollama:/root/.ollama
+  # CPU only, see https://hub.docker.com/r/ollama/ollama for GPU support  
+  # On macOS you _really_ need to use native Ollama, NOT docker. Trust me  
+  # ollama: 
+  #   image: ollama/ollama
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ollama:/root/.ollama
   
   qdrant:
     image: qdrant/qdrant
-    restart: unless-stopped
-    # ports:
-    #   - 6333:6333
+    restart: unless-stopped    
     volumes:
       - qdrant:/qdrant/storage
     healthcheck:
