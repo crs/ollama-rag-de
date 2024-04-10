@@ -84,6 +84,16 @@ def get_llm(llm_host=LLM_HOST, model=LLM_MODEL):
     return llm
 
 
+def clear_vector_store(collection=VECTOR_STORE_COLLECTION):
+    """Clear the vector store.
+
+    Args:
+        collection (str): The collection to clear.
+            Default is "rag".
+    """
+    get_qdrant_client().delete_collection(collection_name=collection)
+
+
 def get_ollama_embedding(model_name=OLLAMA_EMBED_MODEL, base_url=LLM_HOST):
     return OllamaEmbedding(model_name=model_name, base_url=base_url)
 

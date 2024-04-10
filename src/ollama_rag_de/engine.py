@@ -1,4 +1,5 @@
 import os, logging
+from .settings import VECTOR_STORE_COLLECTION
 
 # from .vector_store import get_vector_store_index as get_index
 from .vector_store import get_vector_store_index  # , get_llm
@@ -58,7 +59,7 @@ refine_template = ChatPromptTemplate(chat_refine_msgs)
 
 def get_chat_engine():
     # engine = get_index().as_chat_engine()
-    logger.debug(f"Running with {os.environ['COLLECTION']}")
+    logger.debug(f"Running with {VECTOR_STORE_COLLECTION}")
     # engine = get_vector_store_index(collection=os.environ['COLLECTION']).as_chat_engine(
     #      similarity_top_k=3,
     #      chat_mode="context", # "condense_plus_context",
@@ -68,9 +69,7 @@ def get_chat_engine():
     #      refine_template=refine_template
     # )
 
-    engine = get_vector_store_index(
-        collection=os.environ["COLLECTION"]
-    ).as_query_engine(
+    engine = get_vector_store_index(collection=VECTOR_STORE_COLLECTION).as_query_engine(
         streaming=True,
         similarity_top_k=3,
     )

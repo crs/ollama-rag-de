@@ -1,0 +1,18 @@
+version: '3'
+services:
+  ollama-rag-de:    
+    environment:
+      ENVIRONMENT: dev
+        
+  llm-sherpa:    
+    ports:
+      - 5001:5001
+  
+  ollama: 
+    ports:
+     - "11434:11434"        
+    
+  qdrant:
+    ports:
+      - 6333:6333
+  

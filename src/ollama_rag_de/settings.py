@@ -13,7 +13,9 @@ logger = logging.getLogger("uvicorn")
 def get_env_with_default(key, default):
     value = os.getenv(key, default)
     if value == default:
-        logger.info(f"Using default value for {key}: {default}")
+        logger.info(f"{key}: {default} (default)")
+    else:
+        logger.info(f"{key}: {value} (environ)")
     return value
 
 
@@ -29,3 +31,5 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", None)
 LLMSHERPA_API_URL = get_env_with_default(
     "LLMSHERPA_API_URL", "http://localhost:5010/api/parseDocument?renderFormat=all"
 )
+DATA_FOLDER = get_env_with_default("DATA_FOLDER", "/data")
+CORS_ORIGIN = get_env_with_default("CORS_ORIGIN", "http://localhost:3000")

@@ -1,0 +1,51 @@
+version: '3'
+services:
+  ollama-rag-de:
+    image: docker.cpronect.de/ollama-rag-de:latest       
+    ports:
+      - "8000:8000"
+    volumes:
+      - /Users/crs/Entwicklung/sandbox-n8n/n8n-postgres-worker/example_data/raw/Sharepoint:/data
+    environment:
+      # LLM_HOST: http://host.docker.internal:11434
+      # QDRANT_CONNECTION_STRING: http://host.docker.internal:6333
+      # LLMSHERPA_API_URL: http://host.docker.internal:5010/api/parseDocument?renderFormat=all
+      LLM_HOST: http://ollama:11434
+      QDRANT_CONNECTION_STRING: http://qdrant:6333
+      LLMSHERPA_API_URL: http://llm-sherpa:5001/api/parseDocument?renderFormat=all
+      CORS_ORIGIN: http://localhost:3000
+  
+  llm-sherpa:
+    image: ghcr.io/nlmatics/nlm-ingestor:latest    
+    restart: unless-stopped
+  
+  # CPU only, see https://hub.docker.com/r/ollama/ollama for GPU support
+  # On macOS, it proved more reliable to use a dedicated ollama server outside of docker runtime (speak 600% CPU usage on a 6-core machine)
+  # just change the LLM_HOST to the external IP of the ollama server (e.g. http://localhost:11434)
+  ollama: 
+    image: ollama/ollama
+    restart: unless-stopped
+    # ports:
+    #  - "11434:11434"        
+    volumes:
+      - ollama:/root/.ollama
+  
+  qdrant:
+    image: qdrant/qdrant
+    restart: unless-stopped
+    # ports:
+    #   - 6333:6333
+    volumes:
+      - qdrant:/qdrant/storage
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:6333/metrics']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ollama:
+  qdrant:
+
+
+  

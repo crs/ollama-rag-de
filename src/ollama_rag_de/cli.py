@@ -1,9 +1,7 @@
 import click
 import pathlib
-from os import path
-from .util.file import sizeof_fmt
-from .process_folder import process_pdf, output_document
-from .vector_store import output_to_store, get_vector_store_index
+from .process_folder import ingestion_pipeline
+from .vector_store import get_vector_store_index
 
 from .settings import LLMSHERPA_API_URL, VECTOR_STORE_COLLECTION
 
@@ -20,7 +18,7 @@ from .settings import LLMSHERPA_API_URL, VECTOR_STORE_COLLECTION
 @click.option(
     "-o",
     "--output",
-    default="output",
+    # default="output",
     help='Output folder for the processed data. Default is "output".',
     type=click.Path(exists=False),
 )
@@ -41,7 +39,7 @@ from .settings import LLMSHERPA_API_URL, VECTOR_STORE_COLLECTION
 @click.option(
     "-db",
     "--database",
-    default="rag",
+    default=VECTOR_STORE_COLLECTION,
     help='Store the processed data to "qdrant". Default collection is "rag" ',
     type=click.STRING,
 )
@@ -52,56 +50,36 @@ from .settings import LLMSHERPA_API_URL, VECTOR_STORE_COLLECTION
     is_flag=True,
     default=False,
 )
+@click.option(
+    "-cs",
+    "--clear_store",
+    help="Clear the vector store before outputting the data.",
+    is_flag=True,
+    default=False,
+)
 def entrypoint(
     folder_path: str,
     output: pathlib.Path,
     llmsherpa_api_url: str,
     format: str,
     recursive: bool,
-    database: bool,
+    database: str,
     include_section_info: bool,
+    clear_store: bool,
 ):
     """Process a folder of pdf input data for Ollama and store the documents (also in a database)."""
-
-    working_directory = pathlib.Path(folder_path)
-
-    output_path = pathlib.Path(output)
-    output_path.mkdir(parents=True, exist_ok=True)
-    file_iterator = (
-        working_directory.rglob("*.pdf")
-        if recursive
-        else working_directory.glob("*.pdf")
+    loggerfunc = click.echo
+    ingestion_pipeline(
+        loggerfunc,
+        folder_path,
+        output,
+        llmsherpa_api_url,
+        format,
+        recursive,
+        database,
+        include_section_info,
+        clear_store,
     )
-    click.echo(f'Using "{format}" conversion on input directory: {folder_path}...')
-
-    working_directory = path.abspath(working_directory)
-
-    for i, file in enumerate(file_iterator):
-        try:
-            absolute_path = path.abspath(file)
-            file_name = path.basename(file)
-            output_abspath = path.join(output, path.splitext(file_name)[0])
-            document = process_pdf(str(absolute_path), llmsherpa_api_url)
-            output_filename = output_document(
-                document, output_abspath=output_abspath, format=format
-            )
-
-            file_path_rel_to_input_dir = path.relpath(absolute_path, working_directory)
-            if database:
-                output_to_store(
-                    doc=document,
-                    full_path=str(file_path_rel_to_input_dir),
-                    collection=database,
-                    include_section_info=include_section_info,
-                )
-
-            origin_file_size = sizeof_fmt(file.stat().st_size)
-            processed_file_size = sizeof_fmt(path.getsize(output_filename))
-            click.echo(
-                f"{i+1 : >3} {origin_file_size : >8} -> {processed_file_size : >8}: {file_name}:  ({format})..."
-            )
-        except Exception as e:
-            click.echo(f"Error processing PDF {absolute_path}: {e}")
 
 
 @click.command()

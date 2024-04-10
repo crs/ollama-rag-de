@@ -23,7 +23,6 @@ llama-index-embeddings-ollama = "^0.1.2"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
 black = "^24.3.0"
-deptry = "^0.16.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -7,16 +7,17 @@ import logging
 import os
 import uvicorn
 from ollama_rag_de.chat.router import chat_router
+from ollama_rag_de.api.router import api_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from ollama_rag_de.settings import CORS_ORIGIN
 
 app = FastAPI()
 
 environment = os.getenv("ENVIRONMENT", "dev")  # Default to 'development' if not set
 
-
+logger = logging.getLogger("uvicorn")
 if environment == "dev":
-    logger = logging.getLogger("uvicorn")
     logger.warning("Running in development mode - allowing CORS for all origins")
     app.add_middleware(
         CORSMiddleware,
@@ -25,8 +26,21 @@ if environment == "dev":
         allow_methods=["*"],
         allow_headers=["*"],
     )
+if environment == "prod" or environment == "production":
+    logger.warning(
+        f"Running in production mode - CORS is active (allow: {CORS_ORIGIN})"
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[CORS_ORIGIN],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
 
 app.include_router(chat_router, prefix="/api/chat")
+app.include_router(api_router, prefix="/api/v1")
 
 
 @click.command()
